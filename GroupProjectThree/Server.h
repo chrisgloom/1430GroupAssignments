@@ -10,20 +10,28 @@ class Server {
 int *hotDogServingTimes;
 int *hamburgerServingTimes;
 int availableAtMin;
-bool isBusy=false;
-// NOTE: Should currentCust be a pointer to a customer instead of making a copy?
-Customer *currentCust;
-double cashierAVGHotDog=0,cashierAVGHamburger=0, cashierAVGOrderTime=0;
-vector<int> hotDogServingTimesList, hamburgerServingTimesList;
+bool isBusy;
 
-int bookKeeping(int *arrayOfTimes, vector<int> &recordedTimes, int currentTime){
+Customer *currentCust;
+
+double customersServedThisHour = 0;
+
+double cashierAVGHotDog=0,cashierAVGHamburger=0, cashierAVGOrderTime=0, avgCustomersServedPerHour;
+vector<double> hotDogServingTimesList, hamburgerServingTimesList, allServingTimesList, customersServedInHourList;
+
+int bookKeeping(int *arrayOfTimes, vector<double> &recordedTimes, int currentTime){
         int waitTime = arrayOfTimes[rand()%5];
         recordedTimes.push_back(waitTime);
         availableAtMin = currentTime + waitTime;
+
+        allServingTimesList.push_back(waitTime);
         return waitTime;
 }
 
-
+void customersPerHourTally(){
+  customersServedInHourList.push_back(customersServedThisHour);
+  customersServedThisHour = 0;
+}
 
 
 public:
@@ -41,18 +49,22 @@ void assignBothServingTimes(int hotdog[],int hamburger[]){
 int serveCustomer (Customer* myCust, int currentTime){
 
         if (myCust->getOrder()==HAMBURGER) {
+                customersServedThisHour++;
                 return bookKeeping(hamburgerServingTimes,hamburgerServingTimesList, currentTime);
 
         }else if(myCust->getOrder()==HOTDOG) {
+                customersServedThisHour++;
                 return bookKeeping(hotDogServingTimes, hotDogServingTimesList, currentTime);
         }else{exit(1);}
 
-
-        cashierAVGHotDog = populateAverage(hotDogServingTimesList);
-        cashierAVGHamburger = populateAverage(hamburgerServingTimesList);
         isBusy = true;
 }
 bool serverAvailable(int currentTime){
+        // tally and reset customers per hour if it's a new hour
+        if (currentTime%60==0) {
+          customersPerHourTally();
+        }
+
         if (!isBusy) {
                 return true;
         }else{
@@ -64,7 +76,7 @@ bool serverAvailable(int currentTime){
                 return false;
         }
 }
-double populateAverage(vector<int> servingTimesList){
+double populateAverage(vector<double> &servingTimesList){
   if (servingTimesList.size()==0) {
     return 0;
   }
@@ -73,6 +85,24 @@ double populateAverage(vector<int> servingTimesList){
     sum+=servingTimesList[i];
   }
   return sum/servingTimesList.size();
+}
+void printStats(){
+        cashierAVGHotDog = populateAverage(hotDogServingTimesList);
+        cashierAVGHamburger = populateAverage(hamburgerServingTimesList);
+        avgCustomersServedPerHour = populateAverage(customersServedInHourList);
+        cashierAVGOrderTime = populateAverage(allServingTimesList);
+
+
+  cout<<"Average Number of Customers Served per hour: "<<avgCustomersServedPerHour<<endl
+      <<"Average Time spent on Hotdog Combo orders: "<<cashierAVGHotDog<<endl
+      <<"Average Time spent on Hamburger Combo orders: "<<cashierAVGHamburger<<endl
+      <<"Average Time spent on all orders: "<<cashierAVGOrderTime<<endl;
+}
+
+void printVector(vector<double> printMe){
+  for (size_t i = 0; i < printMe.size(); i++) {
+    cout<<printMe[i]<<endl;
+  }
 }
 
 };

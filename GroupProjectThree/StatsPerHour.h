@@ -12,12 +12,12 @@ float globalAVGWait;
 vector<double> timesToServeAHotdog;
 vector<double> timesToServeAHamburger;
 // NOTE: variable keeps track of how many customers in the current hour and then resets
-int currentHourCustomerCounter;
+int currentHourCustomerCounter = 0;
 // NOTE: Total customers served is just adding up each vector member without dividing
 vector<double> customersInAnHour;
 vector<double> waitTimesForCustomer;
 
-void printStatsInColumns(double hour, double avgHotdog, double avgHamburger, double avgCustomers,double avgWait){
+void printStatsInColumns(int hour, double avgHotdog, double avgHamburger, double avgCustomers,double avgWait){
         cout<<left<<setw(7)<<hour<<setw(14)<<setprecision(2)<<fixed<<avgHotdog<<setw(15)
             <<avgHamburger<<setw(15)<<avgCustomers
             <<setw(12)<<avgWait<<endl;
@@ -73,6 +73,16 @@ float populateAverage(vector<double> input){
         }
         return sum/input.size();
 }
+int getTotalCustomers(){
+  int sum = 0;
+  for (size_t i = 0; i < customersInAnHour.size(); i++) {
+    sum+=customersInAnHour[i];
+  }
+  return sum;
+}
 
+double getAverageWaitTime(){
+  return globalAVGWait;
+}
 
 };

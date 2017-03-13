@@ -24,6 +24,7 @@ int simulationTimeLimit = 4320;
 
 public:
 void runSimulation(){
+        srand(time(NULL));
         // Assign wait times to both servers
         alice.assignBothServingTimes((int[]){1,2,3,4,5},(int[]){8,9,10,11,12});
         bob.assignBothServingTimes((int[]){4,5,6,7,8},(int[]){6,7,8,9,10});
@@ -53,8 +54,16 @@ void runSimulation(){
         // cout<<"bobLine: \n";
         // printAndEmptyQueue(bobLine);
 
+        cout<<endl;
+        // Print out alice and bob's stats around here
+        cout<<"Alice\n";
+        alice.printStats();
+        cout<<"\nBob\n";
+        bob.printStats();
 
-        // NOTE: Print out alice and bob's stats around here
+        cout<<"\nCustomers\n"
+            <<"Total Served: "<<myStats.getTotalCustomers()<<endl
+            <<"Average Wait Time: "<<myStats.getAverageWaitTime()<<" minutes"<<endl;
 }
 
 
@@ -64,6 +73,7 @@ void runSimulation(){
 //Customer generation
 void generateCustomers(int inputTime){
         if (inputTime%5==0 && rand()%100<=69) {
+                // cout<<"Customer made at "<<inputTime<<endl;
                 //Generate Customers every five minutes
                 Customer temp((rand()%101)+1,inputTime);
                 // Randomly into each line
@@ -93,4 +103,3 @@ void processCustomer(Server &myServer, queue<Customer> &myQueue){
 
 
 };
-  
